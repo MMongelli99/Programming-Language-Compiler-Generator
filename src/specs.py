@@ -12,10 +12,11 @@ tokens = {
 
 rules = {
     # rule: {
-    #   pattern
+    #   pattern1,
+    #   pattern2,
+    #   ...
     # }
 
-    # Note: define a rule with no patterns, jsut to see what gets fucked up
     'program':{
         ('val',),
         ('val', 'plus', 'val')
