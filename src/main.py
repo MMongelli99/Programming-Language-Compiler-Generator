@@ -49,7 +49,7 @@ def tokenize(error: Exception, tokens: dict, source_code: str) -> [(str, str),]:
         token, lexeme, start, end = get_next_lexeme(error, tokens, source_code)
         source_code = source_code[end:] # rest of source code after lexeme
         if token: 
-            lexemes.append((token, lexeme))
+            lexemes.append( (token, lexeme) )
             # unindent this line to print ignored lexemes as well
             #print(f"{token if token else ''}:{' '*(offset-len(token if token else ''))}'{lexeme}'")
 
@@ -72,7 +72,7 @@ def get_node(curr_symbol: str) -> Node:
 
     if curr_symbol in rules:
         # RULES ARE NON TERMINAL SYMBOLS
-        get_node.used_grammar_rules.append(curr_symbol)
+        get_node.used_rules.append(curr_symbol)
 
         children = []
         # convert strings to nodes
@@ -90,10 +90,12 @@ def get_node(curr_symbol: str) -> Node:
     else:
         raise NameNotFoundError(f"Symbol '{curr_symbol}' not defined as a rule or token.")
 
-get_node.used_grammar_rules = []
+get_node.used_rules = []
 
-def warn_unused_rules(error: Exception, rules: dict, lexemes: [(str, str),]):
+def get_unused_rules(rules: dict):
     '''Recursively descend grammar and contextualize lexemes. Emit error if syntax is violated.'''
+
+    # NOTE: also make sure none of the rules' or tokens' names overlap
 
     entry_point = 'program'
 
@@ -101,32 +103,52 @@ def warn_unused_rules(error: Exception, rules: dict, lexemes: [(str, str),]):
         raise UndefinedStartSymbolError(f"The start symbol called '{entry_point}' has not been defined.")
 
     parse_tree = get_node(entry_point)
-    
-    unused_grammar_rules = [rule for rule in rules if rule not in get_node.used_grammar_rules]
-    if unused_grammar_rules:
-        warnings.warn(f"{len(unused_grammar_rules)} unused rules in grammar ({','.join(unused_grammar_rules)})")
-
+    parse_tree;
     #print(parse_tree)
+    
+    unused_rules = [rule for rule in rules if rule not in get_node.used_rules]
+
+    return unused_rules
 
 def main():
     with open('test.txt', 'r') as source_file:
 
+        # Get source code #
+
         source_code = source_file.read()
 
-        print(f'INPUT:')
+        print(f'SOURCE CODE:')
         print(f"'{source_code}'")
         print()
 
+        # Tokenize source code into lexemes #
+
         print('TOKENIZING:')
         lexemes = tokenize(ScanError, tokens, source_code)
-        for token, lexeme in lexemes:
-            print(f"{token}: '{lexeme}'")
+        #for token, lexeme in lexemes:
+        #    print(f"{token}: '{lexeme}'")
+        print(lexemes)
         print()
 
-        print('PARSING:')
-        warn_unused_rules(SyntaxError, rules, lexemes)
+        # Validate grammar #
 
-        print(lexemes)
+        unused_rules = get_unused_rules(rules)
+
+        if unused_rules:
+            
+            num_rules = len(unused_rules)
+            unused_rules = [f"'{rule}'" for rule in unused_rules] # wrap rules in quotes
+            s = '' if num_rules==1 else 's' # s if rules is plural
+            
+            unused_rules_warning_message = f"{num_rules} unused rule{s} in grammar: {', '.join(unused_rules)}."
+            
+            warnings.warn(unused_rules_warning_message) 
+            print()
+
+        # Parse lexemes #
+
+        print('PARSING:')
+        
 
 if __name__=='__main__':
     main()
