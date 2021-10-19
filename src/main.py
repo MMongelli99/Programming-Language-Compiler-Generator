@@ -92,7 +92,7 @@ def get_node(curr_symbol: str) -> Node:
 
 get_node.used_rules = []
 
-def get_unused_rules(rules: dict):
+def get_unused_rules(rules: dict) -> list:
     '''Recursively descend grammar and contextualize lexemes. Emit error if syntax is violated.'''
 
     # NOTE: also make sure none of the rules' or tokens' names overlap
@@ -110,7 +110,12 @@ def get_unused_rules(rules: dict):
 
     return unused_rules
 
+class AmbiguousGrammarError(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
 def main():
+
     with open('test.txt', 'r') as source_file:
 
         # Get source code #
@@ -132,6 +137,15 @@ def main():
 
         # Validate grammar #
 
+        # Check if any rules share the same patterns
+        # This is not done recursively so it may need to be checked more thoroughly
+        for rule_a, patterns_a in rules.items():
+            for rule_b, patterns_b in rules.items():
+                for pattern in patterns_a:
+                    if rule_a!=rule_b and pattern in patterns_b:
+                        # if a pattern is shared by two different rules
+                        raise AmbiguousGrammarError(f"Rules '{rule_a}' and '{rule_b}' share pattern {pattern}.")
+
         unused_rules = get_unused_rules(rules)
 
         if unused_rules:
@@ -145,9 +159,13 @@ def main():
             warnings.warn(unused_rules_warning_message) 
             print()
 
+        print(get_node.patterns)
+
         # Parse lexemes #
 
         print('PARSING:')
+
+        
         
 
 if __name__=='__main__':
