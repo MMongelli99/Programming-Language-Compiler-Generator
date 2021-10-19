@@ -7,7 +7,8 @@ tokens = {
     r'#.*':     None, # comment
     r'[0-9]+':  'number',
     r'\+':      'plus',
-    r'\-':      'minus'
+    r'\-':      'minus',
+    r'uhh':     'val',
 }
 
 rules = {
@@ -21,8 +22,8 @@ rules = {
     'program':{
         ('val',): 
             '''%(val)s;''',
-        ('num',): 
-            '''%(num)s;''',
+        #('num',): 
+        #    '''%(num)s;''',
         ('val', 'plus', 'val'): 
             '''%(val)s %(plus)s %(val)s;'''
     }, #('program','val')]
@@ -30,10 +31,14 @@ rules = {
         ('number',): 
             '''%(number)s'''
     },
-    'num':{
+    'plus':{
         ('number',): 
             '''%(number)s'''
     },
+    #'num':{
+    #    ('number',): 
+    #        '''%(number)s'''
+    #},
 }
 
 '''
