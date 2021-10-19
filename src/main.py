@@ -63,7 +63,7 @@ class Node:
 class UndefinedStartSymbolError(Exception):
     def __init__(self, message: str):
         self.message = message
-class NameNotFoundError(Exception):
+class SymbolNotFoundError(Exception):
     def __init__(self, message: str):
         self.message = message
 
@@ -88,7 +88,7 @@ def get_node(curr_symbol: str) -> Node:
         return Node(curr_symbol)
 
     else:
-        raise NameNotFoundError(f"Symbol '{curr_symbol}' not defined as a rule or token.")
+        raise SymbolNotFoundError(f"Symbol '{curr_symbol}' not defined as a rule or token.")
 
 get_node.used_rules = []
 
@@ -114,7 +114,47 @@ class AmbiguousGrammarError(Exception):
     def __init__(self, message: str):
         self.message = message
 
+class AmbiguousSymbolError(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
 def main():
+
+    # Validate token #
+
+    overlapping_symbols = set(tokens.values()).intersection(rules.keys())
+   
+    overlapping_symbols = [f"'{symbol}'" for symbol in overlapping_symbols]
+    s = '' if len(overlapping_symbols)==1 else 's' # s if rules is plural
+    w = 'was' if len(overlapping_symbols)==1 else 'were'
+    if overlapping_symbols:
+        raise AmbiguousSymbolError(f"Symbol{s} {w} defined as token{s} and rule{s}: {', '.join(overlapping_symbols) }.")
+
+    # Validate grammar #
+
+    # Check if any rules share the same patterns
+    # This is not done recursively so it may need to be checked more thoroughly
+    for rule_a, patterns_a in rules.items():
+        for rule_b, patterns_b in rules.items():
+            for pattern in patterns_a:
+                if rule_a!=rule_b and pattern in patterns_b:
+                    # if a pattern is shared by two different rules
+                    raise AmbiguousGrammarError(f"Rules '{rule_a}' and '{rule_b}' share pattern {pattern}.")
+
+    # Check if any rules cannot be used because they are disjoint
+
+    unused_rules = get_unused_rules(rules)
+
+    if unused_rules:
+        
+        num_rules = len(unused_rules)
+        unused_rules = [f"'{rule}'" for rule in unused_rules] # wrap rules in quotes
+        s = '' if num_rules==1 else 's' # s if rules is plural
+        
+        unused_rules_warning_message = f"{num_rules} unused rule{s} in grammar: {', '.join(unused_rules)}."
+        
+        warnings.warn(unused_rules_warning_message) 
+        print()
 
     with open('test.txt', 'r') as source_file:
 
@@ -134,32 +174,6 @@ def main():
         #    print(f"{token}: '{lexeme}'")
         print(lexemes)
         print()
-
-        # Validate grammar #
-
-        # Check if any rules share the same patterns
-        # This is not done recursively so it may need to be checked more thoroughly
-        for rule_a, patterns_a in rules.items():
-            for rule_b, patterns_b in rules.items():
-                for pattern in patterns_a:
-                    if rule_a!=rule_b and pattern in patterns_b:
-                        # if a pattern is shared by two different rules
-                        raise AmbiguousGrammarError(f"Rules '{rule_a}' and '{rule_b}' share pattern {pattern}.")
-
-        unused_rules = get_unused_rules(rules)
-
-        if unused_rules:
-            
-            num_rules = len(unused_rules)
-            unused_rules = [f"'{rule}'" for rule in unused_rules] # wrap rules in quotes
-            s = '' if num_rules==1 else 's' # s if rules is plural
-            
-            unused_rules_warning_message = f"{num_rules} unused rule{s} in grammar: {', '.join(unused_rules)}."
-            
-            warnings.warn(unused_rules_warning_message) 
-            print()
-
-        print(get_node.patterns)
 
         # Parse lexemes #
 
