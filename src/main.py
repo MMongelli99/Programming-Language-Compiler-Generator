@@ -7,10 +7,6 @@ class ScanError(Exception):
     def __init__(self, invalidity: str):
         self.invalidity = invalidity
 
-class SyntaxError(Exception):
-    def __init__(self, invalidity: str):
-        self.invalidity = invalidity
-
 def get_next_lexeme(error: Exception, tokens: dict, source_code: str) -> (str, str, int, int):
     '''Get longest pattern at start of input string. If no match, raise error.'''
 
@@ -110,6 +106,13 @@ def get_unused_rules(rules: dict) -> list:
 
     return unused_rules
 
+class SyntaxError(Exception):
+    def __init__(self, invalidity: str):
+        self.invalidity = invalidity 
+
+def parse(error: Exception, start_symbol: str, rules: dict, lexemes: list):
+    pass
+
 class AmbiguousGrammarError(Exception):
     def __init__(self, message: str):
         self.message = message
@@ -180,8 +183,7 @@ def main():
         # Parse lexemes #
 
         print('PARSING:')
-
-        
+        parse(SyntaxError, 'program', rules, lexemes)
         
 
 if __name__=='__main__':
