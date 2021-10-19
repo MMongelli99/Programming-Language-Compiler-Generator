@@ -1,5 +1,5 @@
 # Note: dicts overwrite duplicate keys so it wont matter if you write one twice
-
+# Should duplicate token names be allowed?
 tokens = {
     # pattern:  token
     r' ':       None, # whitespace
@@ -8,7 +8,6 @@ tokens = {
     r'[0-9]+':  'number',
     r'\+':      'plus',
     r'\-':      'minus',
-    r'uhh':     'val',
 }
 
 rules = {
@@ -28,10 +27,6 @@ rules = {
             '''%(val)s %(plus)s %(val)s;'''
     }, #('program','val')]
     'val':{
-        ('number',): 
-            '''%(number)s'''
-    },
-    'plus':{
         ('number',): 
             '''%(number)s'''
     },
