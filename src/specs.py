@@ -12,14 +12,17 @@ tokens = {
 
 rules = {
     # rule: {
-    #   pattern1,
-    # pattern2,
-    # ...
+    #   pattern1: code,
+    #   pattern2: code,
+    #   ...
     # }
 
     # Note: define a rule with no patterns, jsut to see what gets messed up
     'program':{
-        ('val',): '%(val)s;',
+        ('val',): 
+            '''%(val)s;''',
+        ('num',): 
+            '''%(num)s;''',
         ('val', 'plus', 'val'): 
             '''%(val)s %(plus)s %(val)s;'''
     }, #('program','val')]
@@ -27,9 +30,10 @@ rules = {
         ('number',): 
             '''%(number)s'''
     },
-    'disjoint rule': {
-        ('plus',)
-    }
+    'num':{
+        ('number',): 
+            '''%(number)s'''
+    },
 }
 
 '''
