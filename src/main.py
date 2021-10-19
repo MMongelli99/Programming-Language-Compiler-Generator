@@ -32,9 +32,9 @@ def get_next_lexeme(error: Exception, tokens: dict, source_code: str) -> (str, s
             #longest_search = max(searches, key=lambda m: len(m[0])) # longest
             #searches = list(filter(lambda s: len(s.group())==len(longest_search.group()), searches)) # longest
             search = min(searches, key=lambda m: m.start()) # soonest occurence of a token found
-            raise error(f"'{source_code[:search.start()]}'")
+            raise error(f"Input not valid by any defined tokens: '{source_code[:search.start()]}'")
         else:
-            raise error(f"'{source_code}'")
+            raise error(f"Input not valid by any defined tokens: '{source_code}'")
 
 def tokenize(error: Exception, tokens: dict, source_code: str) -> [(str, str),]: 
     '''Breakup input file into lexemes and categoreize by token. Emit error if unrecognizable input is found.'''
@@ -120,7 +120,9 @@ class AmbiguousSymbolError(Exception):
 
 def main():
 
-    # Validate token #
+    # Validate tokens #
+
+    # Check for symbol names used as tokens and rules
 
     overlapping_symbols = set(tokens.values()).intersection(rules.keys())
    
