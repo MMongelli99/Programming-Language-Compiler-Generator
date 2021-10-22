@@ -1,3 +1,3 @@
 # Programming-Language-Compiler-Generator
-Create and compile your own programming language with ease.
+Create and compile your own custom programming language with ease.
 Still under construction.
