@@ -1,3 +1,2 @@
 # Programming-Language-Compiler-Generator
-Create and compile your own custom programming language with ease. 
-Personal project, still under construction.
+Define the syntax and semantics of a programming language of your own design. Hopefully this could be a useful resource to beginners who are interested in creating programming languages and want to try out some ideas without having to create their own compiler from scratch. This project is still *very far* from done, I just work on it as a fun side-project.
